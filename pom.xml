@@ -50,6 +50,7 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+		<!-- Esta bd es para usarla y hacer pruebas en local-->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -66,6 +67,16 @@
 			<version>3.0.4</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+        	<groupId>org.postgresql</groupId>
+        	<artifactId>postgresql</artifactId>
+        	<scope>runtime</scope>
+    	</dependency>
+		<dependency>
+        	<groupId>org.projectlombok</groupId>
+        	<artifactId>lombok</artifactId>
+        	<scope>provided</scope>
+    	</dependency>
 	</dependencies>
 
 	<build>

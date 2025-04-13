@@ -1,0 +1,5 @@
+<mapper namespace="com.paintballProject.paintballBack.users.mapper.UsuarioMapper">
+    <select id="findAll" resultType="com.paintballProject.paintballBack.users.model.Usuario">
+        SELECT * FROM users
+    </select>
+</mapper>
