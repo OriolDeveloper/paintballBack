@@ -1,13 +1,12 @@
 package com.paintballProject.paintballBack.users.mapper;
 
-
-import com.paintballProject.paintballBack.users.model.Usuario;
+import com.paintballProject.paintballBack.users.model.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 @Mapper
-public interface UsuarioMapper {
+public interface UserMapper {
     @Select("SELECT * FROM users")
-    List<Usuario> findAll();
+    List<User> findAll();
 }
