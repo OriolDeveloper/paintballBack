@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -63,23 +64,24 @@ public class SecurityConfig {
         JsonUsernamePasswordAuthenticationFilter jsonLoginFilter = new JsonUsernamePasswordAuthenticationFilter(
                 authManager);
 
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/authentication/register", "/api/authentication/login").permitAll()
-                        .requestMatchers("/api/authentication/myUser").authenticated()
-                        .anyRequest().authenticated())
-                .addFilter(jsonLoginFilter)
-                .logout(logout -> logout
-                        .logoutUrl("/api/authentication/logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"message\":\"Logout correcto\"}");
-                        }));
+      http
+    .csrf(csrf -> csrf.disable())
+    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/authentication/register", "/api/authentication/login").permitAll()
+            .requestMatchers("/api/authentication/myUser").authenticated()
+            .anyRequest().authenticated())
+    .addFilterAt(jsonLoginFilter, UsernamePasswordAuthenticationFilter.class)
+    .logout(logout -> logout
+            .logoutUrl("/api/authentication/logout")
+            .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID")
+            .logoutSuccessHandler((req, res, auth) -> {
+                res.setStatus(HttpServletResponse.SC_OK);
+                res.setContentType("application/json");
+                res.getWriter().write("{\"message\":\"Logout correcto\"}");
+            }));
+
 
         return http.build();
     }

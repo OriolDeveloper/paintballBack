@@ -13,11 +13,12 @@ import lombok.RequiredArgsConstructor;
 import com.paintballProject.paintballBack.authentication.dto.AuthResponse;
 import com.paintballProject.paintballBack.authentication.dto.RegisterRequest;
 import com.paintballProject.paintballBack.authentication.service.AuthenticationService;
+import com.paintballProject.paintballBack.common.constants.globalConstants;
 import com.paintballProject.paintballBack.security.CustomUserDetails;
 import com.paintballProject.paintballBack.users.dto.UserDto;
 
 @RestController
-@RequestMapping("/api/authentication")
+@RequestMapping(globalConstants.ENDPOINT_AUTHENTICATION)
 @RequiredArgsConstructor
 public class AuthenticationController {
 

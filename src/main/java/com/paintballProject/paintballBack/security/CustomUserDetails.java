@@ -29,7 +29,6 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Si no usas roles todavía, devuelve lista vacía
         return Collections.emptyList();
     }
 
