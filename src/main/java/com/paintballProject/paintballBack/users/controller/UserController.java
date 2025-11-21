@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @RestController
 @RequestMapping(globalConstants.ENDPOINT_USER)
 @RequiredArgsConstructor
-@CrossOrigin(origins = globalConstants.RUTA_FRONT, allowCredentials = "true")
+@CrossOrigin(origins = globalConstants.FRONTEND_URL, allowCredentials = "true")
 public class UserController {
 
     private final UserRepository userRepository;
