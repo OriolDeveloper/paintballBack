@@ -5,11 +5,17 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.paintballProject.paintballBack.category.model.Category;
 import com.paintballProject.paintballBack.category.repository.CategoryRepository;
+import com.paintballProject.paintballBack.common.dto.CommentDto;
+import com.paintballProject.paintballBack.common.dto.CommentRequest;
+import com.paintballProject.paintballBack.common.model.Comments;
+import com.paintballProject.paintballBack.common.repository.CommentsRepository;
 import com.paintballProject.paintballBack.news.dto.NewsDto;
 import com.paintballProject.paintballBack.news.dto.NewsRequest;
 import com.paintballProject.paintballBack.news.dto.NewsResponse;
@@ -26,6 +32,7 @@ public class NewsService {
     private final NewsRepository newsRepository; // JPA
     private final CategoryRepository categoryRepository; // JPA
     private final UserRepository userRepository; // JPA
+    private final CommentsRepository commentsRepository;
 
 
 
@@ -114,6 +121,65 @@ public NewsResponse updateNew(NewsRequest request) throws IOException {
     } else {
         return false;
     }
+}
+@Transactional
+public void addComment(CommentRequest req) {
+    Comments comment = new Comments();
+
+    User user = userRepository.findById(req.getUserId())
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+    comment.setUser(user);
+    comment.setContent(req.getContent());
+    comment.setTargetType("news"); // para noticias
+    comment.setTargetId(req.getNewsId());
+
+    if (req.getParentId() != null) {
+        Comments parent = commentsRepository.findById(req.getParentId())
+                .orElseThrow(() -> new RuntimeException("Comentario padre no existe"));
+        comment.setParent(parent);
+    }
+
+    commentsRepository.save(comment);
+}
+
+@Transactional(readOnly = true)
+public List<CommentDto> getCommentsTree(Long newsId) {
+    List<Comments> roots =
+        commentsRepository.findByTargetTypeAndTargetIdAndParentIsNullOrderByCreatedAtAsc("news", newsId);
+
+    return roots.stream()
+            .map(this::toDto)
+            .toList();
+}
+
+private CommentDto toDto(Comments c) {
+    CommentDto dto = new CommentDto();
+    dto.setId(c.getId());
+    dto.setUsername(c.getUser().getUsername());
+    dto.setContent(c.getContent());
+    dto.setCreatedAt(c.getCreatedAt());
+    dto.setParentId(c.getParent() != null ? c.getParent().getId() : null);
+
+    List<CommentDto> replies = c.getReplies().stream()
+            .map(this::toDto)
+            .toList();
+
+    dto.setReplies(replies);
+    return dto;
+}
+
+
+@Transactional(readOnly = true)
+public Optional<NewsResponse> getNewWithComments(Long id) {
+    return newsRepository.findById(id)
+            .map(news -> {
+                NewsResponse response = toResponse(news);
+                // Cargar comentarios como árbol
+                List<CommentDto> comments = getCommentsTree(news.getId());
+                response.setComments(comments);
+                return response;
+            });
 }
 
 }

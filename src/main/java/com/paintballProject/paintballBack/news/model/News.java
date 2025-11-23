@@ -2,9 +2,10 @@ package com.paintballProject.paintballBack.news.model;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
-
+import com.paintballProject.paintballBack.common.model.Comments;
 import com.paintballProject.paintballBack.category.model.Category;
 import com.paintballProject.paintballBack.users.model.User;
 
@@ -55,6 +56,10 @@ public class News {
 
     @Column()
     private Boolean isFeatured;
+
+    // Relación con comentarios
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Comments> comments;
 
     @CreationTimestamp
     protected void onCreate() {

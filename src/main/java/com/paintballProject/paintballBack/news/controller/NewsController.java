@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.paintballProject.paintballBack.common.constants.globalConstants;
+import com.paintballProject.paintballBack.common.dto.CommentDto;
+import com.paintballProject.paintballBack.common.dto.CommentRequest;
 import com.paintballProject.paintballBack.news.dto.NewsRequest;
 import com.paintballProject.paintballBack.news.dto.NewsResponse;
 import com.paintballProject.paintballBack.news.service.NewsService;
@@ -33,15 +36,6 @@ public class NewsController {
 
     @GetMapping("/allNews")
     public List<NewsResponse> getAllNews() {
-        List<NewsResponse> news = newsService.getAllNews();
-        if (news == null || news.isEmpty()) {
-            return List.of();
-        }
-        return news;
-    }
-
-        @GetMapping("/getNew/{id}")
-    public List<NewsResponse> getNew() {
         List<NewsResponse> news = newsService.getAllNews();
         if (news == null || news.isEmpty()) {
             return List.of();
@@ -100,4 +94,22 @@ public class NewsController {
                                 .body("Error al procesar la petición: " + ex.getMessage());
         }
     }
+    
+            @GetMapping("/getNew/{id}")
+    public ResponseEntity<?> getNew(@PathVariable Long id) {
+        return newsService.getNewWithComments(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+@PostMapping("/addComment")
+public ResponseEntity<?> addComment(@RequestBody CommentRequest request) {
+    newsService.addComment(request);
+    return ResponseEntity.ok().build();
+}
+
+@GetMapping("/{id}/comments")
+public ResponseEntity<List<CommentDto>> getComments(@PathVariable Long id) {
+    return ResponseEntity.ok(newsService.getCommentsTree(id));
+}
 }
