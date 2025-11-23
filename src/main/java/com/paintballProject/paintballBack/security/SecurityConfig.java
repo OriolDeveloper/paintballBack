@@ -68,8 +68,8 @@ public class SecurityConfig {
     .csrf(csrf -> csrf.disable())
     .cors(cors -> cors.configurationSource(corsConfigurationSource()))
     .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/authentication/register", "/api/authentication/login").permitAll()
             .requestMatchers("/api/authentication/myUser").authenticated()
+            .requestMatchers("/api/**").permitAll()
             .anyRequest().authenticated())
     .addFilterAt(jsonLoginFilter, UsernamePasswordAuthenticationFilter.class)
     .logout(logout -> logout

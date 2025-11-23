@@ -22,24 +22,6 @@ public class UserService {
                 .toList();
     }
 
-    /**
-     * public List<UserDto> searchUsers(String keyword) {
-     * return userMapper.searchByUsername(keyword).stream()
-     * .map(this::toDto)
-     * .toList();
-     * }
-     * 
-     * public List<UserDto> searchAdvanced(String email, String role) {
-     * Map<String, Object> filter = new HashMap<>();
-     * filter.put("email", email);
-     * filter.put("role", role);
-     * 
-     * return userMapper.searchAdvanced(filter).stream()
-     * .map(this::toDto)
-     * .toList();
-     * }
-     */
-
     private UserDto toDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
